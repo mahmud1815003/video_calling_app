@@ -1,31 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useVerifyMutation } from "../redux/api/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import { login, logout } from "../redux/slice/auth";
 
-const UseAuth = ({ children }) => {
+const useAuth = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("auth");
-  const reduxToken = useSelector((state) => state.auth.token);
-  const [verify, { data, error, isError, isLoading, isSuccess }] =
-    useVerifyMutation();
+  const  [check, setCheck] = useState(false);
+  const [verify, { data, error, isError, isLoading, isSuccess }] = useVerifyMutation();
   useEffect(() => {
     if (token) {
       verify(JSON.parse(token));
+    }else{
+      setCheck(true);
     }
-  }, [token, reduxToken]);
-  if (isError) {
-    localStorage.clear("auth");
-    dispatch(logout());
-  }
-  if (isSuccess) {
-    dispatch(login(JSON.parse(token)));
-  }
-  if (isLoading) {
-    return null;
-  }
-  return  children ;
+  }, []);
+  useEffect(() => {
+    if(!isLoading && isSuccess){
+      dispatch(login(data));
+      setCheck(true);
+    }
+    if(!isLoading && isError){
+      localStorage.clear('auth');
+      setCheck(true);
+    }
+  }, [isLoading])
+  return check;
 };
 
-export default UseAuth;
+export default useAuth;

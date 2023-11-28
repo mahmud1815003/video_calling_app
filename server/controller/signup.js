@@ -52,7 +52,7 @@ const createUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     const newPass = await bcrypt.hash(password, 10);
-    const hash = crypto.createHash('sha256', email).digest('hex');
+    const hash = crypto.createHash('sha256', email).digest('hex') + Date.now().toString();
     const result = await sendMail('Videology Verification Code', `Here is your Verification Code: ${hash}\n\n--Videology Team`, email);
     const token = await jwt.sign({
         name: name,

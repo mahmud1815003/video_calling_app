@@ -6,12 +6,14 @@ import Layout from "./pages/Layout";
 import PublicLayout from "./pages/PublicLayout";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import UseAuth from "./utils/UseAuth";
 import PrivateRoute from "./utils/PrivateRoute";
 import PublicRoute from "./utils/PublicRoute";
+import useAuth from "./utils/UseAuth";
+import Loading from "./Component/Loading";
 
 function App() {
   const [mode, setMode] = useState("dark");
+  const checked = useAuth();
   const theme = useMemo(
     () =>
       createTheme({
@@ -23,20 +25,26 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <UseAuth>
+      {checked ? (
+        <BrowserRouter>
           <Routes>
-            <Route element={<PrivateRoute><Layout /></PrivateRoute>}>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
-            <Route element={<PublicRoute><PublicLayout /></PublicRoute>}>
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route
+              element={
+                <PublicRoute>
+                  <PublicLayout />
+                </PublicRoute>
+              }
+            >
               <Route path="/" element={<Navigate to={"/login"} />} replace />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
             </Route>
           </Routes>
-        </UseAuth>
-      </BrowserRouter>
+        </BrowserRouter>
+      ) : (
+        <Loading />
+      )}
     </ThemeProvider>
   );
 }

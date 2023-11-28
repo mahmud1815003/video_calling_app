@@ -8,6 +8,7 @@ const http = require('http');
 const createError = require('http-errors');
 const { notFoundHandler, errorHandler } = require('./middlewares/error');
 const { authRouter } = require('./routes/auth');
+const { userRouter } = require('./routes/user');
 const app = express();
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.get('/', (req,res, next) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/user', userRouter);
 
 //Not Found
 app.use(notFoundHandler);

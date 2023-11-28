@@ -15,7 +15,7 @@ const authApi = api.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           dispatch(login(data));
-          localStorage.setItem('auth', JSON.stringify(data));
+          localStorage.setItem("auth", JSON.stringify(data));
         } catch (error) {
           console.log(error);
         }
@@ -33,23 +33,66 @@ const authApi = api.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           dispatch(login(data));
-          localStorage.setItem('auth', JSON.stringify(data));
+          localStorage.setItem("auth", JSON.stringify(data));
         } catch (error) {
           console.log(error);
         }
       },
     }),
-    verify:  builder.mutation({
-      query: (data) =>  {
+    verify: builder.mutation({
+      query: (data) => {
         return {
           method: "POST",
-          url: '/auth/verify',
+          url: "/auth/verify",
+          body: data,
+        };
+      },
+    }),
+    verification: builder.mutation({
+      query: (data) => {
+        return {
+          method: "POST",
+          url: "/user/emailVerification",
+          body: data,
+        };
+      },
+    }),
+    addFriend: builder.mutation({
+      query: (data) => {
+        return {
+          method: 'POST',
+          url: 'user/addFriend',
+          body: data,
+        }
+      },
+      invalidatesTags: ['addFriend'],
+    }),
+    allFriends: builder.query({
+      query: () => {
+        return '/user/allFriends';
+      },
+      providesTags: ['addFriend']
+    }),
+    singleFriend: builder.mutation({
+      query: (data) => {
+        return {
+          method: 'post',
+          url: '/user/single',
           body: data,
         }
       }
-    })
+    }) 
   }),
   overrideExisting: true,
 });
 
-export const { useSignUpMutation, useLoginMutation, useVerifyMutation } = authApi;
+export const {
+  useSignUpMutation,
+  useLoginMutation,
+  useVerifyMutation,
+  useVerificationMutation,
+  useAddFriendMutation,
+  useAllFriendsQuery,
+  useSingleFriendMutation
+} = authApi;
+

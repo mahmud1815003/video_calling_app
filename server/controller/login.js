@@ -67,8 +67,11 @@ const verify = async (req,res,next) => {
   try{
     const decoded = await jwt.verify(req.body.token,process.env.salt);
     if(decoded){
+      const user = await peopleModel.findOne({email:  decoded.email});
       res.status(200).json({
-        ok: true,
+        name: user.name,
+        token: req.body.token,
+        verified: user.verified,
       })
     }else{
       res.status(401).json({
@@ -80,6 +83,7 @@ const verify = async (req,res,next) => {
      next(createError(401, error?.message));
   }
 }
+
 
 module.exports = {
   checkLogin,
