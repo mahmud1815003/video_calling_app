@@ -1,9 +1,11 @@
 import { Box, IconButton, Avatar, Typography, alpha, Badge } from "@mui/material";
 import { orange, grey } from "@mui/material/colors";
 import React from "react";
+import { useSelector } from "react-redux";
 
 const MainChatHeader = () => {
-    const name = 'Sumaya'
+    const {chatId, friendList} = useSelector(state => state.global);
+    const {friend} = friendList?.filter((fr) => chatId == fr.index)[0];
   return (
       <Box
         sx={{
@@ -32,7 +34,7 @@ const MainChatHeader = () => {
             }}
           >
             <Avatar
-              alt={`${name}`}
+              alt={`${friend.name}`}
               sx={{ bgcolor: orange[800] }}
               src="broken.jpg"
             />
@@ -40,13 +42,13 @@ const MainChatHeader = () => {
         </IconButton>
         <Box>
           <Typography fontSize={"15px"} sx={{ fontWeight: "bold" }}>
-            {name}
+            {friend.name}
           </Typography>
           <Typography
             fontSize={"12px"}
             sx={{ color: grey[500] }}
           >
-            active
+            {friend.email}
           </Typography>
         </Box>
       </Box>

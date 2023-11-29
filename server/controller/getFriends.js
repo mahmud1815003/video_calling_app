@@ -21,6 +21,7 @@ const getSingle = async (req,res,next) => {
         const {email} = req.body;
         console.log(email);
         const user = await peopleModel.find({email: email});
+        console.log(req.body);
         res.status(200).json({
             name: user[0].name,
             email: user[0].email,

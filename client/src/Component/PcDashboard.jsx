@@ -18,9 +18,14 @@ import MainChatHeader from "./MainChatHeader";
 import ChatHero from "./ChatHero";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import FindFriend from "./FindFriend";
+import UnChatHero from "./UnChatHero";
+import { socket } from "../utils/Socket";
 
 const PcDashboard = () => {
-  const { name } = useSelector((state) => state.auth);
+  const { name, token } = useSelector((state) => state.auth);
+  const [connected, setConnected] = useState(false);
+  const { chatId, friendEmails, videoCall, friendList } = useSelector((state) => state.global);
+  const { email } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [find, setFind] = useState(false);
   const [menuData, setMenuData] = useState("");
@@ -41,6 +46,16 @@ const PcDashboard = () => {
       dispatch(logout());
     }
   }, [menuData]);
+
+  useEffect(() => {
+    if(videoCall){
+      socket.emit('call', {
+        email,
+        friend: friendList.filter((fri) => fri.index == chatId)
+      })
+    }
+  }, [videoCall])
+
   return (
     <Box
       sx={{
@@ -83,8 +98,8 @@ const PcDashboard = () => {
               }}
               sx={{
                 "& .MuiBadge-badge": {
-                  color: "lightgreen",
-                  backgroundColor: "green",
+                  color: connected ? "lightgreen" : "grey",
+                  backgroundColor: connected ? "green" : "grey",
                 },
               }}
             >
@@ -104,7 +119,7 @@ const PcDashboard = () => {
             </Typography>
           </Box>
           <Box justifyContent={"end"}>
-            <Tooltip title='Add Friend'>
+            <Tooltip title="Add Friend">
               <IconButton sx={{ fontSize: 30 }} onClick={() => setFind(true)}>
                 <AddCircleOutlineIcon fontSize="inherit" />
               </IconButton>
@@ -126,7 +141,10 @@ const PcDashboard = () => {
           </MenuItem> */}
           <MenuItem
             sx={{ minWidth: "200px" }}
-            onClick={(e) => handleMenu(e, "logout")}
+            onClick={(e) => {
+              handleMenu(e, "logout");
+              window.location.reload();
+            }}
           >
             Logout
           </MenuItem>
@@ -136,7 +154,7 @@ const PcDashboard = () => {
         </Box>
       </Box>
       <Box width={"80%"} height={"90vh"}>
-        <MainChatHeader />
+        {chatId != undefined ? <MainChatHeader /> : null}
         <Box
           sx={{
             width: "100%",
@@ -146,7 +164,7 @@ const PcDashboard = () => {
             alignItems: "center",
           }}
         >
-          <ChatHero />
+          {chatId != undefined ? <ChatHero /> : <UnChatHero />}
           {find && <FindFriend open={find} setOpen={setFind} />}
         </Box>
       </Box>

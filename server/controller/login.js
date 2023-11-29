@@ -84,10 +84,25 @@ const verify = async (req,res,next) => {
   }
 }
 
+const socketVerfiy = async (socket, next) => {
+    try{
+      const decoded = await jwt.verify(socket?.handshake?.auth?.token, process.env.salt);
+      if(decoded){
+        next();
+      }else{
+        next(createError(401, 'Unauthrized'));
+      }
+    }catch(error){
+      console.log(error);
+      next(createError(401, 'Unauthrized'));
+    }
+}
+
 
 module.exports = {
   checkLogin,
   loginValidation,
   loginTokens,
   verify,
+  socketVerfiy,
 };

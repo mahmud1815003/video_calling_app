@@ -76,7 +76,7 @@ const authApi = api.injectEndpoints({
     singleFriend: builder.mutation({
       query: (data) => {
         return {
-          method: 'post',
+          method: 'POST',
           url: '/user/single',
           body: data,
         }
